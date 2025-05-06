@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Record Video - Unify</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="profile">
+  <div class="container">
+    <h2>Record and Upload Video</h2>
+    <video id="preview" autoplay muted playsinline style="width: 100%; border-radius: 12px; margin-bottom: 16px;"></video>
+    <div>
+      <button id="startBtn" class="btn primary">Start Recording</button>
+      <button id="stopBtn" class="btn secondary">Stop & Upload</button>
+    </div>
+  </div>
+  <script>
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+      document.getElementById('preview').srcObject = stream;
+      mediaRecorder = new MediaRecorder(stream);
+
+      mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        alert('Video ready to upload. Simulating upload...');
+        console.log("Upload URL:", url);
+      };
+
+      document.getElementById('startBtn').onclick = () => {
+        recordedChunks = [];
+        mediaRecorder.start();
+      };
+
+      document.getElementById('stopBtn').onclick = () => {
+        mediaRecorder.stop();
+      };
+    });
+  </script>
+</body>
+</html>
